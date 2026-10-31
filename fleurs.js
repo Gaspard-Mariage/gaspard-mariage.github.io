@@ -30,7 +30,7 @@ function floret(x, y, s, rot, fill, pal) {
   var out = `<g transform="translate(${f(x)} ${f(y)}) rotate(${Math.round(rot)})">`;
   var d = petal(s);
   for (var i = 0; i < 4; i++) {
-    out += `<path d="${d}" transform="rotate(${i * 90 + R(-8, 8)}) scale(${f(R(0.9, 1.08))})" fill="${fill}" stroke="${pal.line}" stroke-width="0.6" stroke-linejoin="round"/>`;
+    out += `<path d="${d}" transform="rotate(${i * 90 + R(-8, 8)}) scale(${f(R(0.9, 1.08))})" fill="${fill}" stroke="${pal.line}" stroke-width="0.45" stroke-opacity="0.8" stroke-linejoin="round"/>`;
   }
   out += `<circle r="${f(s * 0.13)}" fill="${pal.eye}"/>`;
   return out + "</g>";
@@ -53,7 +53,7 @@ function head(cx, cy, r, kind) {
   var pts = [];
   var minD = r * 0.235;
   for (var t = 0; t < 4000 && pts.length < 80; t++) {
-    var a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * 0.93;
+    var a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * 0.97;
     var x = cx + Math.cos(a) * r * d, y = cy + Math.sin(a) * ry * d;
     if (pts.every((p) => Math.hypot(p[0] - x, p[1] - y) > minD)) pts.push([x, y]);
   }
@@ -63,43 +63,47 @@ function head(cx, cy, r, kind) {
     var nx = (x - cx) / r;
     var edge = Math.min(1, Math.hypot(nx, ny));
     var base = pal.tints[Math.floor(rnd() * pal.tints.length)];
-    var fill = mix(base, pal.base, Math.max(0, ny * 0.45 + edge * 0.25));
-    var s = r * R(0.2, 0.25) * (1 - edge * 0.18);
+    var shaded = mix(base, pal.base, Math.max(0, ny * 0.45 + edge * 0.25));
+    var fill = mix(shaded, "#FFFFFF", Math.max(0, (-ny * 0.5 - nx * 0.3) * 0.35));
+    var s = r * R(0.19, 0.27) * (1 - edge * 0.2);
     out +=floret(x, y, s, R(0, 90), fill, pal);
   }
   return out + "</g>";
 }
 
-// Feuille ovale pointue, bord finement denté, nervure claire
+// Feuille d'hortensia : ovale à pointe effilée, bord finement denté, nervures toujours à l'intérieur
 function leaf(x, y, len, angle, tone = "dark") {
-  var wMax = len * 0.36;
+  var wMax = len * 0.34;
+  var prof = (t) => wMax * Math.pow(Math.sin(Math.PI * Math.pow(t, 0.68)), 1.35);
   var top = [], bot = [];
-  var steps = 44;
+  var steps = 48;
   for (var i = 0; i <= steps; i++) {
     var t = i / steps;
-    var prof = Math.pow(Math.sin(Math.PI * Math.pow(t, 0.72)), 1.15) * wMax;
-    var tooth = i % 2 === 0 ? 1 : 0.965;
-    top.push([t * len, -prof * tooth]);
-    bot.push([t * len, prof * (i % 2 === 1 ? 1 : 0.965)]);
+    var w = prof(t);
+    var tooth = i % 2 === 0 ? 1 : 0.975;
+    top.push([t * len, -w * tooth]);
+    bot.push([t * len, w * (i % 2 === 1 ? 1 : 0.975)]);
   }
   var d = `M0 0 `;
   top.forEach((p) => (d += `L${f(p[0])} ${f(p[1])} `));
-  bot.reverse().forEach((p) => (d += `L${f(p[0])} ${f(p[1])} `));
+  bot.slice().reverse().forEach((p) => (d += `L${f(p[0])} ${f(p[1])} `));
   d += "Z";
-  var half = `M0 0 ` + top.map((p) => `L${f(p[0])} ${f(p[1])}`).join(" ") + ` L${f(len)} 0 Z`;
+  var half = `M0 0 ` + top.map((p) => `L${f(p[0])} ${f(p[1])}`).join(" ") + ` Z`;
   var fill = LEAF[tone];
   var veins = "";
   for (var i = 1; i <= 5; i++) {
-    var t = i / 6.2;
-    var vx = t * len, w = Math.sin(Math.PI * t) * wMax * 0.75;
-    veins += `M${f(vx)} 0 Q${f(vx + len * 0.06)} ${f(-w * 0.5)} ${f(vx + len * 0.12)} ${f(-w)} `;
-    veins += `M${f(vx)} 0 Q${f(vx + len * 0.06)} ${f(w * 0.5)} ${f(vx + len * 0.12)} ${f(w)} `;
+    var t0 = 0.1 + i * 0.13;
+    var t1 = Math.min(0.92, t0 + 0.14);
+    var w = prof(t1) * 0.78;
+    var x0 = t0 * len, x1 = t1 * len;
+    veins += `M${f(x0)} 0 Q${f((x0 + x1) / 2)} ${f(-w * 0.35)} ${f(x1)} ${f(-w)} `;
+    veins += `M${f(x0)} 0 Q${f((x0 + x1) / 2)} ${f(w * 0.35)} ${f(x1)} ${f(w)} `;
   }
   return `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(angle)})">` +
     `<path d="${d}" fill="${fill}"/>` +
-    `<path d="${half}" fill="${LEAF.mid}" opacity="0.55"/>` +
-    `<path d="${veins}" stroke="${LEAF.vein}" stroke-width="0.9" fill="none" opacity="0.6"/>` +
-    `<path d="M0 0 L${f(len * 0.97)} 0" stroke="${LEAF.vein}" stroke-width="1.4" fill="none"/>` +
+    `<path d="${half}" fill="${LEAF.light}" opacity="0.35"/>` +
+    `<path d="${veins}" stroke="${LEAF.vein}" stroke-width="0.8" fill="none" opacity="0.55" stroke-linecap="round"/>` +
+    `<path d="M0 0 Q${f(len * 0.5)} ${f(-len * 0.015)} ${f(len * 0.93)} 0" stroke="${LEAF.vein}" stroke-width="1.3" fill="none" stroke-linecap="round"/>` +
     `</g>`;
 }
 
@@ -149,12 +153,31 @@ var BUILD = {
   return svg(200, 200, b); }
 };
 var cache = {};
+// Agrandit le cadre pour que rien ne soit coupé à droite ni en bas.
+// Le coin haut-gauche (0,0) reste collé au bord de la page ; seule la fleur "fleur" est entièrement cadrée.
+function fit(svgEl, key) {
+  try {
+    var vb = svgEl.viewBox.baseVal, bb = svgEl.getBBox(), pad = 2;
+    if (!bb.width) return;
+    if (key === "fleur") {
+      svgEl.setAttribute("viewBox", [bb.x - pad, bb.y - pad, bb.width + pad * 2, bb.height + pad * 2].join(" "));
+    } else {
+      var w = Math.max(vb.width, bb.x + bb.width + pad), h = Math.max(vb.height, bb.y + bb.height + pad);
+      svgEl.setAttribute("viewBox", "0 0 " + Math.ceil(w) + " " + Math.ceil(h));
+    }
+  } catch (e) {}
+}
+var fitted = {};
 function draw() {
   document.querySelectorAll("[data-fleur]").forEach(function (el) {
     var k = el.getAttribute("data-fleur");
     if (!BUILD[k]) return;
     if (!cache[k]) cache[k] = BUILD[k]();
     el.innerHTML = cache[k];
+    var s = el.querySelector("svg");
+    if (fitted[k]) { s.setAttribute("viewBox", fitted[k]); return; }
+    fit(s, k);
+    fitted[k] = s.getAttribute("viewBox");
   });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", draw); else draw();
