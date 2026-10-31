@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Réponses · Laure & Gaspard</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="admin">
+
+<header class="admin-bar gutter">
+  <div class="wrap">
+    <h1 class="script">Réponses des invités</h1>
+    <div class="who" id="who" hidden><span id="who-email"></span><button class="linkbtn" id="logout" type="button">Se déconnecter</button></div>
+  </div>
+</header>
+
+<main>
+  <!-- Connexion -->
+  <section id="login-view" class="gutter" hidden>
+    <div class="card login">
+      <div class="card-head">
+        <p class="kicker">Espace des mariés</p>
+        <h2 class="script" style="font-size:2.6rem;margin:.4rem 0 0;font-weight:400">Connexion</h2>
+      </div>
+      <form id="login" class="form" novalidate>
+        <div class="q"><label class="qlabel" for="email">Adresse e-mail</label><input class="field" type="email" id="email" autocomplete="username" required></div>
+        <div class="q"><label class="qlabel" for="password">Mot de passe</label><input class="field" type="password" id="password" autocomplete="current-password" required></div>
+        <p id="login-error" class="notice error" hidden></p>
+        <div class="form-foot"><button class="btn solid" type="submit" id="login-btn">Se connecter</button></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="setup-view" class="gutter" hidden>
+    <div class="card login"><p class="notice error" style="margin:0">Le site n'est pas encore relié à Supabase. Renseignez l'adresse du projet et la clé dans <b>config.js</b> (voir le guide, étape 2).</p></div>
+  </section>
+
+  <section id="denied-view" class="gutter" hidden>
+    <div class="card login"><p class="notice error" style="margin:0">Ce compte n'a pas accès aux réponses. Ajoutez son adresse dans la table <b>admins</b> de Supabase.</p></div>
+  </section>
+
+  <!-- Tableau de bord -->
+  <div id="dash" class="gutter" hidden>
+    <div class="wrap">
+      <div class="stats" id="stats"></div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Toutes les réponses</h2>
+          <div class="tools">
+            <input class="field" type="search" id="search" placeholder="Rechercher un nom" aria-label="Rechercher un nom">
+            <select class="field" id="filter" aria-label="Filtrer">
+              <option value="all">Toutes</option>
+              <option value="oui">Présents</option>
+              <option value="non">Absents</option>
+              <option value="allergies">Avec allergies</option>
+            </select>
+            <button class="btn" type="button" id="refresh">Actualiser</button>
+            <button class="btn solid" type="button" id="export">Exporter (Excel)</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Reçue le</th>
+                <th>Nom(s)</th>
+                <th>Présence</th>
+                <th>Moments</th>
+                <th class="num">Adultes</th>
+                <th class="num">+10 ans</th>
+                <th class="num">−10 ans</th>
+                <th>Allergies</th>
+                <th><span class="hp">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="empty" hidden>Aucune réponse pour le moment.</p>
+      </section>
+
+      <section class="panel" id="allergy-panel">
+        <div class="panel-head"><h2>Allergies et intolérances</h2></div>
+        <ul class="allergy-list" id="allergy-list"></ul>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  var sb = window.getSupabase ? window.getSupabase() : null;
+  var $ = function (id) { return document.getElementById(id); };
+  var views = ["login-view", "setup-view", "denied-view", "dash"];
+  function show(id) { views.forEach(function (v) { $(v).hidden = v !== id; }); }
+  var data = [];
+  var pendingDelete = null;
+
+  if (!sb) { show("setup-view"); return; }
+
+  async function boot() {
+    var s = await sb.auth.getSession();
+    var session = s.data && s.data.session;
+    if (!session) { $("who").hidden = true; show("login-view"); return; }
+    $("who-email").textContent = session.user.email;
+    $("who").hidden = false;
+    var adm = await sb.rpc("is_admin");
+    if (adm.error || adm.data !== true) { show("denied-view"); return; }
+    show("dash");
+    load();
+  }
+
+  $("login").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var btn = $("login-btn"), err = $("login-error");
+    err.hidden = true; btn.disabled = true; btn.textContent = "Connexion…";
+    var res = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
+    btn.disabled = false; btn.textContent = "Se connecter";
+    if (res.error) {
+      err.textContent = "Adresse e-mail ou mot de passe incorrect.";
+      err.hidden = false; return;
+    }
+    $("password").value = "";
+    boot();
+  });
+  $("logout").addEventListener("click", async function () { await sb.auth.signOut(); data = []; boot(); });
+
+  async function load() {
+    $("refresh").disabled = true;
+    var res = await sb.from("reponses").select("*").order("created_at", { ascending: false });
+    $("refresh").disabled = false;
+    if (res.error) { $("rows").innerHTML = ""; $("empty").textContent = "Impossible de charger les réponses. Actualisez la page."; $("empty").hidden = false; return; }
+    data = res.data || [];
+    render();
+  }
+
+  function people(r) { return (r.adultes || 0) + (r.enfants_plus_10 || 0) + (r.enfants_moins_10 || 0); }
+  function sum(list, fn) { return list.reduce(function (a, r) { return a + fn(r); }, 0); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  var fmt = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  function stat(k, v, d, lead) {
+    return '<div class="stat' + (lead ? " lead" : "") + '"><span class="k">' + k + '</span><span class="v">' + v + '</span><span class="d">' + d + "</span></div>";
+  }
+
+  function render() {
+    var yes = data.filter(function (r) { return r.presence; });
+    var no = data.length - yes.length;
+    var total = sum(yes, people);
+    var ad = sum(yes, function (r) { return r.adultes; });
+    var p10 = sum(yes, function (r) { return r.enfants_plus_10; });
+    var m10 = sum(yes, function (r) { return r.enfants_moins_10; });
+    function at(key) { return sum(yes.filter(function (r) { return r[key]; }), people); }
+    function s(n, one, many) { return n + " " + (n > 1 ? many : one); }
+    $("stats").innerHTML =
+      stat("Personnes attendues", total, s(ad, "adulte", "adultes") + ", " + s(p10 + m10, "enfant", "enfants") + " (" + m10 + " de −10 ans)", true) +
+      stat("Réponses reçues", data.length, yes.length + " oui · " + no + " non") +
+      stat("Mairie · 15h", at("ceremonie"), "personnes à la cérémonie civile") +
+      stat("Cocktail & dîner", at("soiree"), "personnes au dîner") +
+      stat("Brunch dimanche", at("brunch"), "personnes au brunch");
+
+    var q = $("search").value.trim().toLowerCase();
+    var f = $("filter").value;
+    var rows = data.filter(function (r) {
+      if (f === "oui" && !r.presence) return false;
+      if (f === "non" && r.presence) return false;
+      if (f === "allergies" && !r.allergies) return false;
+      return !q || (r.noms || "").toLowerCase().indexOf(q) !== -1;
+    });
+    $("rows").innerHTML = rows.map(function (r) {
+      var tags = [];
+      if (r.ceremonie) tags.push("Mairie");
+      if (r.soiree) tags.push("Dîner");
+      if (r.brunch) tags.push("Brunch");
+      var actions = pendingDelete === r.id
+        ? '<span class="confirm">Supprimer ?<button type="button" class="yes" data-confirm="' + r.id + '">Oui</button><button type="button" data-cancel>Non</button></span>'
+        : '<button type="button" class="del" data-del="' + r.id + '" aria-label="Supprimer la réponse de ' + esc(r.noms) + '">Supprimer</button>';
+      return "<tr>" +
+        '<td class="date">' + esc(fmt.format(new Date(r.created_at))) + "</td>" +
+        '<td class="names">' + esc(r.noms).replace(/\n/g, "<br>") + "</td>" +
+        "<td>" + (r.presence ? '<span class="pill yes">Oui</span>' : '<span class="pill no">Non</span>') + "</td>" +
+        '<td><div class="tags">' + tags.map(function (t) { return '<span class="tag">' + t + "</span>"; }).join("") + "</div></td>" +
+        '<td class="num">' + (r.presence ? r.adultes : "–") + "</td>" +
+        '<td class="num">' + (r.presence ? r.enfants_plus_10 : "–") + "</td>" +
+        '<td class="num">' + (r.presence ? r.enfants_moins_10 : "–") + "</td>" +
+        '<td class="allerg">' + esc(r.allergies || "") + "</td>" +
+        '<td class="row-actions">' + actions + "</td>" +
+        "</tr>";
+    }).join("");
+    $("empty").textContent = data.length ? "Aucune réponse ne correspond à ce filtre." : "Aucune réponse pour le moment.";
+    $("empty").hidden = rows.length > 0;
+
+    var al = data.filter(function (r) { return r.presence && r.allergies; });
+    $("allergy-list").innerHTML = al.length
+      ? al.map(function (r) { return "<li><b>" + esc(r.noms) + "</b><span>" + esc(r.allergies) + "</span></li>"; }).join("")
+      : '<li style="color:var(--ink-soft)">Aucune allergie signalée pour le moment.</li>';
+  }
+
+  $("search").addEventListener("input", render);
+  $("filter").addEventListener("change", render);
+  $("refresh").addEventListener("click", load);
+  $("rows").addEventListener("click", async function (e) {
+    var t = e.target;
+    if (t.hasAttribute("data-del")) { pendingDelete = t.getAttribute("data-del"); render(); return; }
+    if (t.hasAttribute("data-cancel")) { pendingDelete = null; render(); return; }
+    if (t.hasAttribute("data-confirm")) {
+      var id = t.getAttribute("data-confirm");
+      t.disabled = true;
+      var res = await sb.from("reponses").delete().eq("id", id);
+      pendingDelete = null;
+      if (!res.error) data = data.filter(function (r) { return r.id !== id; });
+      render();
+    }
+  });
+
+  $("export").addEventListener("click", function () {
+    var head = ["Reçue le", "Nom(s)", "Présence", "Mairie", "Dîner", "Brunch", "Adultes", "Enfants +10 ans", "Enfants -10 ans", "Allergies"];
+    var lines = [head].concat(data.map(function (r) {
+      return [fmt.format(new Date(r.created_at)), r.noms, r.presence ? "Oui" : "Non", r.ceremonie ? "Oui" : "", r.soiree ? "Oui" : "", r.brunch ? "Oui" : "",
+        r.presence ? r.adultes : "", r.presence ? r.enfants_plus_10 : "", r.presence ? r.enfants_moins_10 : "", r.allergies || ""];
+    }));
+    var csv = lines.map(function (l) { return l.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(";"); }).join("\r\n");
+    var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "reponses-mariage-laure-gaspard.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+
+  sb.auth.onAuthStateChange(function (event) { if (event === "SIGNED_OUT") boot(); });
+  boot();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Votre réponse · Laure & Gaspard</title>
+<meta name="theme-color" content="#F4E0D9">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="rsvp-page gutter">
+  <span class="corner tl" data-fleur="coin-a" aria-hidden="true"></span>
+  <span class="corner br" data-fleur="coin-b" aria-hidden="true"></span>
+
+  <div class="card">
+    <a class="back" href="index.html">← Retour au site</a>
+    <div class="card-head">
+      <p class="kicker">Mariage de Laure &amp; Gaspard · 17 juillet 2027</p>
+      <h1 class="script">Votre réponse</h1>
+      <p>Merci de nous répondre avant le 30 mars 2027.</p>
+    </div>
+
+    <div id="setup" class="notice error" hidden>Le formulaire n'est pas encore relié à sa base de données. Merci de revenir un peu plus tard ou de contacter Laure ou Gaspard.</div>
+
+    <form id="rsvp" class="form" novalidate>
+      <fieldset class="q" id="q-presence">
+        <legend>Je serai présent(e) à votre mariage <span class="req" aria-hidden="true">*</span></legend>
+        <div class="choices yesno">
+          <label class="choice"><input type="radio" name="presence" id="presence-oui" value="oui"><span>Oui</span></label>
+          <label class="choice"><input type="radio" name="presence" id="presence-non" value="non"><span>Non</span></label>
+        </div>
+        <p class="err" hidden>Merci d'indiquer si vous serez présent(e).</p>
+      </fieldset>
+
+      <div id="if-yes" class="form" hidden>
+        <fieldset class="q" id="q-events">
+          <legend>Je viendrai à <span class="req" aria-hidden="true">*</span></legend>
+          <p class="hint">Plusieurs choix possibles.</p>
+          <div class="choices stack">
+            <label class="choice"><input type="checkbox" name="events" id="ev-ceremonie" value="ceremonie"><span>La cérémonie du samedi à 15h à la Mairie de Pougues</span></label>
+            <label class="choice"><input type="checkbox" name="events" id="ev-soiree" value="soiree"><span>Au cocktail, dîner et soirée</span></label>
+            <label class="choice"><input type="checkbox" name="events" id="ev-brunch" value="brunch"><span>Au brunch du dimanche en fin de matinée</span></label>
+          </div>
+          <p class="err" hidden>Choisissez au moins un moment.</p>
+        </fieldset>
+
+        <fieldset class="q" id="q-count">
+          <legend>Je suis / Nous sommes <span class="req" aria-hidden="true">*</span></legend>
+          <div class="counters">
+            <div class="counter"><label for="n-adultes">Adultes</label><div class="stepper" data-for="n-adultes"><button type="button" data-step="-1" aria-label="Retirer un adulte">−</button><input type="number" id="n-adultes" min="0" max="7" value="1" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un adulte">+</button></div></div>
+            <div class="counter"><label for="n-plus10">Enfants de plus de 10 ans</label><div class="stepper" data-for="n-plus10"><button type="button" data-step="-1" aria-label="Retirer un enfant de plus de 10 ans">−</button><input type="number" id="n-plus10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de plus de 10 ans">+</button></div></div>
+            <div class="counter"><label for="n-moins10">Enfants de moins de 10 ans</label><div class="stepper" data-for="n-moins10"><button type="button" data-step="-1" aria-label="Retirer un enfant de moins de 10 ans">−</button><input type="number" id="n-moins10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de moins de 10 ans">+</button></div></div>
+          </div>
+          <p class="err" hidden>Indiquez au moins une personne.</p>
+        </fieldset>
+
+        <div class="q" id="q-allergies">
+          <label class="qlabel" for="allergies">J'ai des intolérances ou allergies alimentaires</label>
+          <p class="hint">Facultatif. Précisez pour qui, si vous venez à plusieurs.</p>
+          <textarea class="field" id="allergies" rows="3" maxlength="1000"></textarea>
+        </div>
+      </div>
+
+      <div class="q" id="q-noms">
+        <label class="qlabel" for="noms">Nom(s) et prénom(s) de chacun <span class="req" aria-hidden="true">*</span></label>
+        <textarea class="field" id="noms" rows="3" maxlength="500" placeholder="Ex. : Marie et Paul Durand, Léa Durand"></textarea>
+        <p class="err" hidden>Merci d'indiquer vos noms et prénoms.</p>
+      </div>
+
+      <div class="hp" aria-hidden="true"><label for="site-web">Site web</label><input type="text" id="site-web" tabindex="-1" autocomplete="off"></div>
+
+      <div class="form-foot">
+        <p id="send-error" class="notice error" hidden></p>
+        <button class="btn solid" type="submit" id="submit">Envoyer ma réponse</button>
+      </div>
+    </form>
+
+    <div id="thanks" class="thanks" hidden>
+      <span class="script" id="thanks-title">Merci !</span>
+      <p id="thanks-text">Votre réponse a bien été enregistrée.</p>
+      <div class="btn-row" style="margin-top:1rem">
+        <a class="btn" href="index.html">Retour au site</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  var form = document.getElementById("rsvp");
+  var ifYes = document.getElementById("if-yes");
+  var sb = window.getSupabase ? window.getSupabase() : null;
+  if (!sb) document.getElementById("setup").hidden = false;
+
+  function presence() { var r = form.querySelector('input[name="presence"]:checked'); return r ? r.value : null; }
+  form.querySelectorAll('input[name="presence"]').forEach(function (r) {
+    r.addEventListener("change", function () { ifYes.hidden = presence() !== "oui"; clear("q-presence"); });
+  });
+
+  // Compteurs − / +
+  form.querySelectorAll(".stepper").forEach(function (st) {
+    var input = document.getElementById(st.getAttribute("data-for"));
+    var btns = st.querySelectorAll("button");
+    function sync() {
+      var v = Math.max(0, Math.min(7, parseInt(input.value, 10) || 0));
+      input.value = v; btns[0].disabled = v <= 0; btns[1].disabled = v >= 7;
+    }
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () { input.value = (parseInt(input.value, 10) || 0) + Number(b.getAttribute("data-step")); sync(); clear("q-count"); });
+    });
+    input.addEventListener("change", sync);
+    sync();
+  });
+  form.querySelectorAll('input[name="events"]').forEach(function (c) { c.addEventListener("change", function () { clear("q-events"); }); });
+  document.getElementById("noms").addEventListener("input", function () { clear("q-noms"); });
+
+  function flag(id) { var q = document.getElementById(id); q.classList.add("invalid"); q.querySelector(".err").hidden = false; return q; }
+  function clear(id) { var q = document.getElementById(id); q.classList.remove("invalid"); var e = q.querySelector(".err"); if (e) e.hidden = true; }
+  function num(id) { return Math.max(0, Math.min(7, parseInt(document.getElementById(id).value, 10) || 0)); }
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var errBox = document.getElementById("send-error");
+    errBox.hidden = true;
+    var p = presence();
+    var events = Array.prototype.map.call(form.querySelectorAll('input[name="events"]:checked'), function (c) { return c.value; });
+    var noms = document.getElementById("noms").value.trim();
+    var adultes = num("n-adultes"), plus10 = num("n-plus10"), moins10 = num("n-moins10");
+    var bad = [];
+    if (!p) bad.push(flag("q-presence"));
+    if (p === "oui" && !events.length) bad.push(flag("q-events"));
+    if (p === "oui" && adultes + plus10 + moins10 < 1) bad.push(flag("q-count"));
+    if (noms.length < 2) bad.push(flag("q-noms"));
+    if (bad.length) { bad[0].scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+
+    // Robot : champ caché rempli → on fait comme si tout allait bien
+    if (document.getElementById("site-web").value) { done(p); return; }
+
+    if (!sb) { errBox.textContent = "Le formulaire n'est pas encore relié à sa base de données. Contactez Laure ou Gaspard pour leur répondre."; errBox.hidden = false; return; }
+
+    var yes = p === "oui";
+    var row = {
+      presence: yes,
+      ceremonie: yes && events.indexOf("ceremonie") !== -1,
+      soiree: yes && events.indexOf("soiree") !== -1,
+      brunch: yes && events.indexOf("brunch") !== -1,
+      adultes: yes ? adultes : 0,
+      enfants_plus_10: yes ? plus10 : 0,
+      enfants_moins_10: yes ? moins10 : 0,
+      allergies: yes ? (document.getElementById("allergies").value.trim() || null) : null,
+      noms: noms
+    };
+    var btn = document.getElementById("submit");
+    btn.disabled = true; btn.textContent = "Envoi…";
+    try {
+      var res = await sb.from("reponses").insert(row);
+      if (res.error) throw res.error;
+      done(p);
+    } catch (err) {
+      errBox.textContent = "L'envoi n'a pas abouti. Vérifiez votre connexion internet puis réessayez. Si le problème continue, prévenez Laure ou Gaspard.";
+      errBox.hidden = false;
+      btn.disabled = false; btn.textContent = "Envoyer ma réponse";
+    }
+  });
+
+  function done(p) {
+    form.hidden = true;
+    document.getElementById("thanks-title").textContent = p === "oui" ? "Merci !" : "Merci de nous avoir prévenus";
+    document.getElementById("thanks-text").textContent = p === "oui"
+      ? "Votre réponse est bien enregistrée. Nous avons hâte de fêter ce jour avec vous le 17 juillet 2027."
+      : "Votre réponse est bien enregistrée. Vous nous manquerez, nous penserons à vous ce jour-là.";
+    document.getElementById("thanks").hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+})();
+</script>
+<script src="fleurs.js"></script>
+</body>
+</html>
