@@ -15,8 +15,11 @@ create table if not exists public.reponses (
   adultes          smallint not null default 0 check (adultes between 0 and 7),
   enfants_plus_10  smallint not null default 0 check (enfants_plus_10 between 0 and 7),
   enfants_moins_10 smallint not null default 0 check (enfants_moins_10 between 0 and 7),
-  allergies        text check (allergies is null or char_length(allergies) <= 1000),
-  noms             text not null check (char_length(noms) between 2 and 500),
+  allergies        text check (allergies is null or char_length(allergies) <= 5000),
+  noms             text not null check (char_length(noms) between 2 and 2500),
+  -- une fiche par personne : [{categorie, prenom, nom, allergie}]
+  personnes        jsonb not null default '[]'::jsonb
+                   check (jsonb_typeof(personnes) = 'array' and jsonb_array_length(personnes) <= 21),
   -- si la personne vient : au moins un moment choisi et au moins une personne
   constraint reponse_coherente check (
     presence = false

@@ -62,7 +62,8 @@
               <option value="allergies">Avec allergies</option>
             </select>
             <button class="btn" type="button" id="refresh">Actualiser</button>
-            <button class="btn solid" type="button" id="export">Exporter (Excel)</button>
+            <button class="btn" type="button" id="export">Exporter les réponses</button>
+            <button class="btn solid" type="button" id="export-people">Exporter la liste des invités</button>
           </div>
         </div>
         <div class="table-wrap">
@@ -143,6 +144,20 @@
     render();
   }
 
+  var CAT = { adulte: "Adulte", enfant_plus_10: "Enfant + 10 ans", enfant_moins_10: "Enfant − 10 ans" };
+  function persons(r) { return Array.isArray(r.personnes) ? r.personnes : []; }
+  function namesHtml(r) {
+    var ps = persons(r);
+    if (!ps.length) return esc(r.noms).replace(/\n/g, "<br>");
+    return ps.map(function (x) {
+      return esc(x.prenom + " " + x.nom) + (x.categorie && x.categorie !== "adulte" ? ' <span class="tag">' + CAT[x.categorie] + "</span>" : "");
+    }).join("<br>");
+  }
+  function allergyItems(r) {
+    var ps = persons(r).filter(function (x) { return x.allergie; });
+    if (ps.length) return ps.map(function (x) { return { who: x.prenom + " " + x.nom, what: x.allergie }; });
+    return r.allergies ? [{ who: r.noms, what: r.allergies }] : [];
+  }
   function people(r) { return (r.adultes || 0) + (r.enfants_plus_10 || 0) + (r.enfants_moins_10 || 0); }
   function sum(list, fn) { return list.reduce(function (a, r) { return a + fn(r); }, 0); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -173,8 +188,8 @@
     var rows = data.filter(function (r) {
       if (f === "oui" && !r.presence) return false;
       if (f === "non" && r.presence) return false;
-      if (f === "allergies" && !r.allergies) return false;
-      return !q || (r.noms || "").toLowerCase().indexOf(q) !== -1;
+      if (f === "allergies" && !allergyItems(r).length) return false;
+      return !q || ((r.noms || "") + " " + persons(r).map(function (x) { return x.prenom + " " + x.nom; }).join(" ")).toLowerCase().indexOf(q) !== -1;
     });
     $("rows").innerHTML = rows.map(function (r) {
       var tags = [];
@@ -186,22 +201,23 @@
         : '<button type="button" class="del" data-del="' + r.id + '" aria-label="Supprimer la réponse de ' + esc(r.noms) + '">Supprimer</button>';
       return "<tr>" +
         '<td class="date">' + esc(fmt.format(new Date(r.created_at))) + "</td>" +
-        '<td class="names">' + esc(r.noms).replace(/\n/g, "<br>") + "</td>" +
+        '<td class="names">' + namesHtml(r) + "</td>" +
         "<td>" + (r.presence ? '<span class="pill yes">Oui</span>' : '<span class="pill no">Non</span>') + "</td>" +
         '<td><div class="tags">' + tags.map(function (t) { return '<span class="tag">' + t + "</span>"; }).join("") + "</div></td>" +
-        '<td class="num">' + (r.presence ? r.adultes : "–") + "</td>" +
-        '<td class="num">' + (r.presence ? r.enfants_plus_10 : "–") + "</td>" +
-        '<td class="num">' + (r.presence ? r.enfants_moins_10 : "–") + "</td>" +
-        '<td class="allerg">' + esc(r.allergies || "") + "</td>" +
+        '<td class="num">' + r.adultes + "</td>" +
+        '<td class="num">' + r.enfants_plus_10 + "</td>" +
+        '<td class="num">' + r.enfants_moins_10 + "</td>" +
+        '<td class="allerg">' + allergyItems(r).map(function (a) { return "<b>" + esc(a.who) + "</b> : " + esc(a.what); }).join("<br>") + "</td>" +
         '<td class="row-actions">' + actions + "</td>" +
         "</tr>";
     }).join("");
     $("empty").textContent = data.length ? "Aucune réponse ne correspond à ce filtre." : "Aucune réponse pour le moment.";
     $("empty").hidden = rows.length > 0;
 
-    var al = data.filter(function (r) { return r.presence && r.allergies; });
+    var al = [];
+    data.filter(function (r) { return r.presence; }).forEach(function (r) { al = al.concat(allergyItems(r)); });
     $("allergy-list").innerHTML = al.length
-      ? al.map(function (r) { return "<li><b>" + esc(r.noms) + "</b><span>" + esc(r.allergies) + "</span></li>"; }).join("")
+      ? al.map(function (a) { return "<li><b>" + esc(a.who) + "</b><span>" + esc(a.what) + "</span></li>"; }).join("")
       : '<li style="color:var(--ink-soft)">Aucune allergie signalée pour le moment.</li>';
   }
 
@@ -222,19 +238,32 @@
     }
   });
 
-  $("export").addEventListener("click", function () {
-    var head = ["Reçue le", "Nom(s)", "Présence", "Mairie", "Dîner", "Brunch", "Adultes", "Enfants +10 ans", "Enfants -10 ans", "Allergies"];
-    var lines = [head].concat(data.map(function (r) {
-      return [fmt.format(new Date(r.created_at)), r.noms, r.presence ? "Oui" : "Non", r.ceremonie ? "Oui" : "", r.soiree ? "Oui" : "", r.brunch ? "Oui" : "",
-        r.presence ? r.adultes : "", r.presence ? r.enfants_plus_10 : "", r.presence ? r.enfants_moins_10 : "", r.allergies || ""];
-    }));
-    var csv = lines.map(function (l) { return l.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(";"); }).join("\r\n");
-    var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+  function download(name, lines) {
+    var csv = lines.map(function (l) { return l.map(function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }).join(";"); }).join("\r\n");
+    var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "reponses-mariage-laure-gaspard.csv";
+    a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function yn(v) { return v ? "Oui" : ""; }
+  $("export").addEventListener("click", function () {
+    download("reponses-mariage-laure-gaspard.csv", [["Reçue le", "Nom(s)", "Présence", "Mairie", "Dîner", "Brunch", "Adultes", "Enfants +10 ans", "Enfants -10 ans", "Allergies"]].concat(data.map(function (r) {
+      return [fmt.format(new Date(r.created_at)), r.noms, r.presence ? "Oui" : "Non", yn(r.ceremonie), yn(r.soiree), yn(r.brunch), r.adultes, r.enfants_plus_10, r.enfants_moins_10,
+        allergyItems(r).map(function (x) { return x.who + " : " + x.what; }).join(" | ")];
+    })));
+  });
+  $("export-people").addEventListener("click", function () {
+    var lines = [["Prénom", "Nom", "Catégorie", "Présence", "Mairie", "Dîner", "Brunch", "Allergie / intolérance", "Réponse reçue le"]];
+    data.forEach(function (r) {
+      var ps = persons(r);
+      if (!ps.length) ps = [{ prenom: r.noms, nom: "", categorie: "", allergie: r.allergies }];
+      ps.forEach(function (x) {
+        lines.push([x.prenom, x.nom, CAT[x.categorie] || "", r.presence ? "Oui" : "Non", yn(r.ceremonie), yn(r.soiree), yn(r.brunch), x.allergie || "", fmt.format(new Date(r.created_at))]);
+      });
+    });
+    download("invites-mariage-laure-gaspard.csv", lines);
   });
 
   sb.auth.onAuthStateChange(function (event) { if (event === "SIGNED_OUT") boot(); });

@@ -37,41 +37,33 @@
         <p class="err" hidden>Merci d'indiquer si vous serez présent(e).</p>
       </fieldset>
 
-      <div id="if-yes" class="form">
-        <fieldset class="q" id="q-events">
-          <legend>Je viendrai à <span class="req" aria-hidden="true">*</span></legend>
-          <p class="hint">Plusieurs choix possibles.</p>
-          <p class="hint only-no" hidden>Inutile de répondre si vous ne venez pas.</p>
-          <div class="choices stack">
-            <label class="choice"><input type="checkbox" name="events" id="ev-ceremonie" value="ceremonie"><span>La cérémonie du samedi à 15h à la Mairie de Pougues</span></label>
-            <label class="choice"><input type="checkbox" name="events" id="ev-soiree" value="soiree"><span>Au cocktail / dîner / soirée</span></label>
-            <label class="choice"><input type="checkbox" name="events" id="ev-brunch" value="brunch"><span>Au brunch le dimanche en fin de matinée</span></label>
-          </div>
-          <p class="err" hidden>Choisissez au moins un moment.</p>
-        </fieldset>
-
-        <fieldset class="q" id="q-count">
-          <legend>Je suis / Nous sommes <span class="req" aria-hidden="true">*</span></legend>
-          <div class="counters">
-            <div class="counter"><label for="n-adultes">Adultes</label><div class="stepper" data-for="n-adultes"><button type="button" data-step="-1" aria-label="Retirer un adulte">−</button><input type="number" id="n-adultes" min="0" max="7" value="1" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un adulte">+</button></div></div>
-            <div class="counter"><label for="n-plus10">Enfants de + de 10 ans</label><div class="stepper" data-for="n-plus10"><button type="button" data-step="-1" aria-label="Retirer un enfant de plus de 10 ans">−</button><input type="number" id="n-plus10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de plus de 10 ans">+</button></div></div>
-            <div class="counter"><label for="n-moins10">Enfants de − de 10 ans</label><div class="stepper" data-for="n-moins10"><button type="button" data-step="-1" aria-label="Retirer un enfant de moins de 10 ans">−</button><input type="number" id="n-moins10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de moins de 10 ans">+</button></div></div>
-          </div>
-          <p class="err" hidden>Indiquez au moins une personne.</p>
-        </fieldset>
-
-        <div class="q" id="q-allergies">
-          <label class="qlabel" for="allergies">J'ai des intolérances/allergies alimentaires</label>
-          <p class="hint">Facultatif. Précisez pour qui, si vous venez à plusieurs.</p>
-          <textarea class="field" id="allergies" rows="3" maxlength="1000"></textarea>
+      <fieldset class="q" id="q-events">
+        <legend>Je viendrai à <span class="req" aria-hidden="true">*</span></legend>
+        <p class="hint" id="events-hint">Plusieurs choix possibles.</p>
+        <div class="choices stack">
+          <label class="choice"><input type="checkbox" name="events" id="ev-ceremonie" value="ceremonie"><span>La cérémonie du samedi à 15h à la Mairie de Pougues</span></label>
+          <label class="choice"><input type="checkbox" name="events" id="ev-soiree" value="soiree"><span>Au cocktail / dîner / soirée</span></label>
+          <label class="choice"><input type="checkbox" name="events" id="ev-brunch" value="brunch"><span>Au brunch le dimanche en fin de matinée</span></label>
         </div>
-      </div>
+        <p class="err" hidden>Choisissez au moins un moment.</p>
+      </fieldset>
 
-      <div class="q" id="q-noms">
-        <label class="qlabel" for="noms">Nom(s) et prénom(s) de chacun <span class="req" aria-hidden="true">*</span></label>
-        <textarea class="field" id="noms" rows="3" maxlength="500" placeholder="Ex. : Marie et Paul Durand, Léa Durand"></textarea>
-        <p class="err" hidden>Merci d'indiquer vos noms et prénoms.</p>
-      </div>
+      <fieldset class="q" id="q-count">
+        <legend>Je suis / Nous sommes <span class="req" aria-hidden="true">*</span></legend>
+        <div class="counters">
+          <div class="counter"><label for="n-adultes">Adultes</label><div class="stepper" data-for="n-adultes"><button type="button" data-step="-1" aria-label="Retirer un adulte">−</button><input type="number" id="n-adultes" min="0" max="7" value="1" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un adulte">+</button></div></div>
+          <div class="counter"><label for="n-plus10">Enfants de + de 10 ans</label><div class="stepper" data-for="n-plus10"><button type="button" data-step="-1" aria-label="Retirer un enfant de plus de 10 ans">−</button><input type="number" id="n-plus10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de plus de 10 ans">+</button></div></div>
+          <div class="counter"><label for="n-moins10">Enfants de − de 10 ans</label><div class="stepper" data-for="n-moins10"><button type="button" data-step="-1" aria-label="Retirer un enfant de moins de 10 ans">−</button><input type="number" id="n-moins10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de moins de 10 ans">+</button></div></div>
+        </div>
+        <p class="err" hidden>Indiquez au moins une personne.</p>
+      </fieldset>
+
+      <fieldset class="q" id="q-people">
+        <legend>Nom(s) et prénom(s) de chacun <span class="req" aria-hidden="true">*</span></legend>
+        <p class="hint">Une fiche par personne, selon le nombre indiqué ci-dessus. L'allergie ou intolérance alimentaire est facultative.</p>
+        <div class="people" id="people"></div>
+        <p class="err" hidden>Merci de remplir le prénom et le nom de chaque personne.</p>
+      </fieldset>
 
       <div class="hp" aria-hidden="true"><label for="site-web">Site web</label><input type="text" id="site-web" tabindex="-1" autocomplete="off"></div>
 
@@ -96,16 +88,74 @@
 <script>
 (function () {
   var form = document.getElementById("rsvp");
-  var ifYes = document.getElementById("if-yes");
+  var peopleBox = document.getElementById("people");
   var sb = window.getSupabase ? window.getSupabase() : null;
   if (!sb) document.getElementById("setup").hidden = false;
 
+  var CATS = [
+    { key: "adulte", input: "n-adultes", label: "Adulte" },
+    { key: "enfant_plus_10", input: "n-plus10", label: "Enfant de + de 10 ans" },
+    { key: "enfant_moins_10", input: "n-moins10", label: "Enfant de − de 10 ans" }
+  ];
+  var memo = {}; // garde ce qui a été saisi quand on retire puis rajoute une personne
+
   function presence() { var r = form.querySelector('input[name="presence"]:checked'); return r ? r.value : null; }
+  function num(id) { return Math.max(0, Math.min(7, parseInt(document.getElementById(id).value, 10) || 0)); }
+  function flag(id) { var q = document.getElementById(id); q.classList.add("invalid"); q.querySelector(".err").hidden = false; return q; }
+  function clear(id) { var q = document.getElementById(id); q.classList.remove("invalid"); var e = q.querySelector(".err"); if (e) e.hidden = true; }
+
+  function saveMemo() {
+    peopleBox.querySelectorAll(".person").forEach(function (card) {
+      var id = card.getAttribute("data-id");
+      memo[id] = {
+        prenom: card.querySelector('[data-f="prenom"]').value,
+        nom: card.querySelector('[data-f="nom"]').value,
+        allergie: card.querySelector('[data-f="allergie"]').value
+      };
+    });
+  }
+
+  function renderPeople() {
+    saveMemo();
+    peopleBox.innerHTML = "";
+    var total = 0;
+    CATS.forEach(function (c) {
+      var n = num(c.input);
+      for (var i = 1; i <= n; i++) {
+        total++;
+        var id = c.key + "-" + i;
+        var m = memo[id] || {};
+        var card = document.createElement("div");
+        card.className = "person";
+        card.setAttribute("data-id", id);
+        card.setAttribute("data-cat", c.key);
+        card.innerHTML =
+          '<p class="person-title">' + c.label + (n > 1 ? " " + i : "") + "</p>" +
+          '<div class="person-grid">' +
+            '<div class="pf"><label for="p-' + id + '-prenom">Prénom</label><input class="field" id="p-' + id + '-prenom" data-f="prenom" autocomplete="' + (total === 1 ? "given-name" : "off") + '" maxlength="80"></div>' +
+            '<div class="pf"><label for="p-' + id + '-nom">Nom</label><input class="field" id="p-' + id + '-nom" data-f="nom" autocomplete="' + (total === 1 ? "family-name" : "off") + '" maxlength="80"></div>' +
+            '<div class="pf wide"><label for="p-' + id + '-allergie">Intolérance / allergie alimentaire <span class="opt">facultatif</span></label><input class="field" id="p-' + id + '-allergie" data-f="allergie" maxlength="200" placeholder="Ex. : fruits à coque, sans gluten…"></div>' +
+          "</div>";
+        card.querySelector('[data-f="prenom"]').value = m.prenom || "";
+        card.querySelector('[data-f="nom"]').value = m.nom || "";
+        card.querySelector('[data-f="allergie"]').value = m.allergie || "";
+        peopleBox.appendChild(card);
+      }
+    });
+    if (!total) {
+      peopleBox.innerHTML = '<p class="hint" style="margin:0">Ajoutez au moins une personne avec les boutons + ci-dessus.</p>';
+    }
+  }
+
   form.querySelectorAll('input[name="presence"]').forEach(function (r) {
-    r.addEventListener("change", function () { ifYes.classList.toggle("muted", presence() === "non"); ifYes.querySelectorAll(".only-no").forEach(function (h) { h.hidden = presence() !== "non"; }); clear("q-events"); clear("q-count"); clear("q-presence"); });
+    r.addEventListener("change", function () {
+      var no = presence() === "non";
+      document.getElementById("q-events").classList.toggle("muted", no);
+      document.getElementById("events-hint").textContent = no ? "Inutile de répondre si vous ne venez pas." : "Plusieurs choix possibles.";
+      ["q-presence", "q-events"].forEach(clear);
+    });
   });
 
-  // Compteurs − / +
   form.querySelectorAll(".stepper").forEach(function (st) {
     var input = document.getElementById(st.getAttribute("data-for"));
     var btns = st.querySelectorAll("button");
@@ -114,49 +164,64 @@
       input.value = v; btns[0].disabled = v <= 0; btns[1].disabled = v >= 7;
     }
     btns.forEach(function (b) {
-      b.addEventListener("click", function () { input.value = (parseInt(input.value, 10) || 0) + Number(b.getAttribute("data-step")); sync(); clear("q-count"); });
+      b.addEventListener("click", function () { input.value = (parseInt(input.value, 10) || 0) + Number(b.getAttribute("data-step")); sync(); clear("q-count"); renderPeople(); });
     });
-    input.addEventListener("change", sync);
+    input.addEventListener("change", function () { sync(); renderPeople(); });
     sync();
   });
   form.querySelectorAll('input[name="events"]').forEach(function (c) { c.addEventListener("change", function () { clear("q-events"); }); });
-  document.getElementById("noms").addEventListener("input", function () { clear("q-noms"); });
+  peopleBox.addEventListener("input", function (e) { e.target.classList.remove("bad"); clear("q-people"); });
+  renderPeople();
 
-  function flag(id) { var q = document.getElementById(id); q.classList.add("invalid"); q.querySelector(".err").hidden = false; return q; }
-  function clear(id) { var q = document.getElementById(id); q.classList.remove("invalid"); var e = q.querySelector(".err"); if (e) e.hidden = true; }
-  function num(id) { return Math.max(0, Math.min(7, parseInt(document.getElementById(id).value, 10) || 0)); }
+  function readPeople() {
+    return Array.prototype.map.call(peopleBox.querySelectorAll(".person"), function (card) {
+      return {
+        categorie: card.getAttribute("data-cat"),
+        prenom: card.querySelector('[data-f="prenom"]').value.trim(),
+        nom: card.querySelector('[data-f="nom"]').value.trim(),
+        allergie: card.querySelector('[data-f="allergie"]').value.trim() || null
+      };
+    });
+  }
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     var errBox = document.getElementById("send-error");
     errBox.hidden = true;
     var p = presence();
+    var yes = p === "oui";
     var events = Array.prototype.map.call(form.querySelectorAll('input[name="events"]:checked'), function (c) { return c.value; });
-    var noms = document.getElementById("noms").value.trim();
     var adultes = num("n-adultes"), plus10 = num("n-plus10"), moins10 = num("n-moins10");
+    var people = readPeople();
     var bad = [];
     if (!p) bad.push(flag("q-presence"));
-    if (p === "oui" && !events.length) bad.push(flag("q-events"));
-    if (p === "oui" && adultes + plus10 + moins10 < 1) bad.push(flag("q-count"));
-    if (noms.length < 2) bad.push(flag("q-noms"));
+    if (yes && !events.length) bad.push(flag("q-events"));
+    if (adultes + plus10 + moins10 < 1) bad.push(flag("q-count"));
+    var missing = false;
+    peopleBox.querySelectorAll(".person").forEach(function (card) {
+      ["prenom", "nom"].forEach(function (f) {
+        var el = card.querySelector('[data-f="' + f + '"]');
+        if (!el.value.trim()) { el.classList.add("bad"); missing = true; }
+      });
+    });
+    if (missing && people.length) bad.push(flag("q-people"));
     if (bad.length) { bad[0].scrollIntoView({ behavior: "smooth", block: "center" }); return; }
 
-    // Robot : champ caché rempli → on fait comme si tout allait bien
     if (document.getElementById("site-web").value) { done(p); return; }
-
     if (!sb) { errBox.textContent = "Le formulaire n'est pas encore relié à sa base de données. Contactez Laure ou Gaspard pour leur répondre."; errBox.hidden = false; return; }
 
-    var yes = p === "oui";
+    var allergies = people.filter(function (x) { return x.allergie; }).map(function (x) { return x.prenom + " " + x.nom + " : " + x.allergie; }).join("\n");
     var row = {
       presence: yes,
       ceremonie: yes && events.indexOf("ceremonie") !== -1,
       soiree: yes && events.indexOf("soiree") !== -1,
       brunch: yes && events.indexOf("brunch") !== -1,
-      adultes: yes ? adultes : 0,
-      enfants_plus_10: yes ? plus10 : 0,
-      enfants_moins_10: yes ? moins10 : 0,
-      allergies: yes ? (document.getElementById("allergies").value.trim() || null) : null,
-      noms: noms
+      adultes: adultes,
+      enfants_plus_10: plus10,
+      enfants_moins_10: moins10,
+      allergies: allergies || null,
+      noms: people.map(function (x) { return x.prenom + " " + x.nom; }).join(", "),
+      personnes: people
     };
     var btn = document.getElementById("submit");
     btn.disabled = true; btn.textContent = "Envoi…";
