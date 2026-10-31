@@ -37,14 +37,15 @@
         <p class="err" hidden>Merci d'indiquer si vous serez présent(e).</p>
       </fieldset>
 
-      <div id="if-yes" class="form" hidden>
+      <div id="if-yes" class="form">
         <fieldset class="q" id="q-events">
           <legend>Je viendrai à <span class="req" aria-hidden="true">*</span></legend>
           <p class="hint">Plusieurs choix possibles.</p>
+          <p class="hint only-no" hidden>Inutile de répondre si vous ne venez pas.</p>
           <div class="choices stack">
             <label class="choice"><input type="checkbox" name="events" id="ev-ceremonie" value="ceremonie"><span>La cérémonie du samedi à 15h à la Mairie de Pougues</span></label>
-            <label class="choice"><input type="checkbox" name="events" id="ev-soiree" value="soiree"><span>Au cocktail, dîner et soirée</span></label>
-            <label class="choice"><input type="checkbox" name="events" id="ev-brunch" value="brunch"><span>Au brunch du dimanche en fin de matinée</span></label>
+            <label class="choice"><input type="checkbox" name="events" id="ev-soiree" value="soiree"><span>Au cocktail / dîner / soirée</span></label>
+            <label class="choice"><input type="checkbox" name="events" id="ev-brunch" value="brunch"><span>Au brunch le dimanche en fin de matinée</span></label>
           </div>
           <p class="err" hidden>Choisissez au moins un moment.</p>
         </fieldset>
@@ -53,14 +54,14 @@
           <legend>Je suis / Nous sommes <span class="req" aria-hidden="true">*</span></legend>
           <div class="counters">
             <div class="counter"><label for="n-adultes">Adultes</label><div class="stepper" data-for="n-adultes"><button type="button" data-step="-1" aria-label="Retirer un adulte">−</button><input type="number" id="n-adultes" min="0" max="7" value="1" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un adulte">+</button></div></div>
-            <div class="counter"><label for="n-plus10">Enfants de plus de 10 ans</label><div class="stepper" data-for="n-plus10"><button type="button" data-step="-1" aria-label="Retirer un enfant de plus de 10 ans">−</button><input type="number" id="n-plus10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de plus de 10 ans">+</button></div></div>
-            <div class="counter"><label for="n-moins10">Enfants de moins de 10 ans</label><div class="stepper" data-for="n-moins10"><button type="button" data-step="-1" aria-label="Retirer un enfant de moins de 10 ans">−</button><input type="number" id="n-moins10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de moins de 10 ans">+</button></div></div>
+            <div class="counter"><label for="n-plus10">Enfants de + de 10 ans</label><div class="stepper" data-for="n-plus10"><button type="button" data-step="-1" aria-label="Retirer un enfant de plus de 10 ans">−</button><input type="number" id="n-plus10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de plus de 10 ans">+</button></div></div>
+            <div class="counter"><label for="n-moins10">Enfants de − de 10 ans</label><div class="stepper" data-for="n-moins10"><button type="button" data-step="-1" aria-label="Retirer un enfant de moins de 10 ans">−</button><input type="number" id="n-moins10" min="0" max="7" value="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Ajouter un enfant de moins de 10 ans">+</button></div></div>
           </div>
           <p class="err" hidden>Indiquez au moins une personne.</p>
         </fieldset>
 
         <div class="q" id="q-allergies">
-          <label class="qlabel" for="allergies">J'ai des intolérances ou allergies alimentaires</label>
+          <label class="qlabel" for="allergies">J'ai des intolérances/allergies alimentaires</label>
           <p class="hint">Facultatif. Précisez pour qui, si vous venez à plusieurs.</p>
           <textarea class="field" id="allergies" rows="3" maxlength="1000"></textarea>
         </div>
@@ -101,7 +102,7 @@
 
   function presence() { var r = form.querySelector('input[name="presence"]:checked'); return r ? r.value : null; }
   form.querySelectorAll('input[name="presence"]').forEach(function (r) {
-    r.addEventListener("change", function () { ifYes.hidden = presence() !== "oui"; clear("q-presence"); });
+    r.addEventListener("change", function () { ifYes.classList.toggle("muted", presence() === "non"); ifYes.querySelectorAll(".only-no").forEach(function (h) { h.hidden = presence() !== "non"; }); clear("q-events"); clear("q-count"); clear("q-presence"); });
   });
 
   // Compteurs − / +
