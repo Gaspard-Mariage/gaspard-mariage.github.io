@@ -1,0 +1,42 @@
+# Garde le site et sa base de données actifs jusqu'au mariage (et après).
+# - Supabase (offre gratuite) met en pause un projet sans activité pendant 7 jours :
+#   on appelle la base tous les 2 jours.
+# - GitHub désactive les tâches planifiées d'un dépôt public sans activité depuis 60 jours :
+#   on enregistre une petite trace dans le dépôt le 1er de chaque mois.
+name: Garder la base active
+
+on:
+  schedule:
+    - cron: "17 7 */2 * *"   # tous les 2 jours à 7h17 UTC
+  workflow_dispatch:          # bouton "Run workflow" pour un test manuel
+
+permissions:
+  contents: write
+
+jobs:
+  maintien:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Réveiller la base Supabase
+        env:
+          SUPABASE_URL: https://tytfzttshknbdwhkpbeu.supabase.co
+          SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5dGZ6dHRzaGtuYmR3aGtwYmV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTY0MzYsImV4cCI6MjEwOTAzMjQzNn0.urdXo7mQGe_mGAcCh31BoAlakoVE1Hx_Mo7rJWDgkjE
+        run: |
+          curl -fsS --retry 3 --retry-delay 20 -X POST "$SUPABASE_URL/rest/v1/rpc/maintien_actif" \
+            -H "apikey: $SUPABASE_KEY" -H "Authorization: Bearer $SUPABASE_KEY" \
+            -H "Content-Type: application/json" -d '{}'
+
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Laisser une trace dans le dépôt (1er du mois)
+        run: |
+          if [ "$(date -u +%d)" != "01" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "Pas le 1er du mois : rien à enregistrer."; exit 0
+          fi
+          date -u +"%Y-%m-%d %H:%M UTC" > .github/derniere-activite.txt
+          git config user.name "maintien-actif"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/derniere-activite.txt
+          git commit -m "Maintien actif du dépôt" || exit 0
+          git push
