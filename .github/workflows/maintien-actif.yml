@@ -1,13 +1,13 @@
 # Garde le site et sa base de données actifs jusqu'au mariage (et après).
 # - Supabase (offre gratuite) met en pause un projet sans activité pendant 7 jours :
-#   on appelle la base tous les 2 jours.
+#   on appelle la base 4 fois par jour.
 # - GitHub désactive les tâches planifiées d'un dépôt public sans activité depuis 60 jours :
 #   on enregistre une petite trace dans le dépôt le 1er de chaque mois.
 name: Garder la base active
 
 on:
   schedule:
-    - cron: "17 7 */2 * *"   # tous les 2 jours à 7h17 UTC
+    - cron: "17 1,7,13,19 * * *"   # 4 fois par jour (2h17, 8h17, 14h17, 20h17 heure de Paris en hiver)
   workflow_dispatch:          # bouton "Run workflow" pour un test manuel
 
 permissions:
@@ -31,8 +31,8 @@ jobs:
 
       - name: Laisser une trace dans le dépôt (1er du mois)
         run: |
-          if [ "$(date -u +%d)" != "01" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
-            echo "Pas le 1er du mois : rien à enregistrer."; exit 0
+          if [ "$(date -u +%d%H)" != "0107" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "Pas le passage de 7h le 1er du mois : rien à enregistrer."; exit 0
           fi
           date -u +"%Y-%m-%d %H:%M UTC" > .github/derniere-activite.txt
           git config user.name "maintien-actif"
