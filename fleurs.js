@@ -107,9 +107,44 @@ function leaf(x, y, len, angle, tone = "dark") {
     `</g>`;
 }
 
-function stem(x1, y1, x2, y2) {
-  var mx = (x1 + x2) / 2 + R(-10, 10), my = (y1 + y2) / 2 + R(-10, 10);
-  return `<path d="M${f(x1)} ${f(y1)} Q${f(mx)} ${f(my)} ${f(x2)} ${f(y2)}" stroke="${LEAF.mid}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+// Tige courbe de l'ancrage (bord de page) jusqu'au cœur d'une tête ; renvoie un point/angle à une position t
+function curve(x1, y1, x2, y2, bend) {
+  var mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  var dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  var cx = mx - (dy / L) * bend, cy = my + (dx / L) * bend;
+  return {
+    d: `M${f(x1)} ${f(y1)} Q${f(cx)} ${f(cy)} ${f(x2)} ${f(y2)}`,
+    at(t) {
+      var u = 1 - t;
+      var x = u * u * x1 + 2 * u * t * cx + t * t * x2, y = u * u * y1 + 2 * u * t * cy + t * t * y2;
+      var tx = 2 * u * (cx - x1) + 2 * t * (x2 - cx), ty = 2 * u * (cy - y1) + 2 * t * (y2 - cy);
+      return { x, y, a: Math.atan2(ty, tx) * 180 / Math.PI };
+    }
+  };
+}
+function stemPath(c, w) {
+  return `<path d="${c.d}" stroke="${LEAF.dark}" stroke-width="${w + 1.2}" fill="none" stroke-linecap="round"/>` +
+         `<path d="${c.d}" stroke="${LEAF.light}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`;
+}
+// Bouquet : chaque branche = ancrage → tête, avec des feuilles fixées sur la tige
+// branches: [{hx, hy, r, kind, bend, leaves: [[t, côté(+1/-1), longueur, écart°], ...]}]
+function bouquet(ax, ay, branches) {
+  var stems = "", leaves = "", heads = "";
+  branches.forEach((br) => {
+    var c = curve(ax, ay, br.hx, br.hy, br.bend || 0);
+    stems += stemPath(c, br.w || 3);
+    (br.leaves || []).forEach(([t, side, len, spread, tone]) => {
+      var p = c.at(t);
+      leaves += leaf(p.x, p.y, len, p.a + side * spread, tone || (side > 0 ? "dark" : "mid"));
+    });
+    // Collerette : feuilles qui partent de sous la tête (leur base reste cachée par la fleur)
+    (br.collar || []).forEach(([deg, len, tone]) => {
+      var rad = deg * Math.PI / 180, k = br.r * 0.45;
+      leaves += leaf(br.hx + Math.cos(rad) * k, br.hy + Math.sin(rad) * k, len, deg, tone || "dark");
+    });
+    heads += head(br.hx, br.hy, br.r, br.kind);
+  });
+  return stems + leaves + heads;
 }
 
 function svg(w, h, body) {
@@ -119,37 +154,31 @@ function svg(w, h, body) {
 
 var BUILD = {
   "coin-a": function () { seed = 71;
-  var b = "";
-  b += leaf(150, 210, 150, 75); b += leaf(230, 120, 140, 20); b += leaf(90, 250, 120, 120, "mid");
-  b += leaf(300, 60, 110, -10, "mid"); b += leaf(60, 160, 130, 150);
-  b += head(70, 70, 95, "lav");
-  b += head(215, 40, 78, "blush");
-  b += head(120, 185, 70, "blush");
-  b += leaf(250, 150, 100, 45);
-  b += head(285, 115, 48, "lav");
+  var b = bouquet(-40, -40, [
+    { hx: 215, hy: 48, r: 76, kind: "blush", bend: 30, collar: [[20, 150], [65, 120, "mid"]] },
+    { hx: 300, hy: 122, r: 48, kind: "lav", bend: -40, w: 2.6, collar: [[-5, 105, "mid"], [70, 100]] },
+    { hx: 118, hy: 192, r: 70, kind: "blush", bend: -30, collar: [[95, 135], [140, 115, "mid"], [45, 105]] },
+    { hx: 72, hy: 72, r: 96, kind: "lav", bend: 0 },
+  ]);
   return svg(400, 340, b); },
   "coin-b": function () { seed = 2027;
-  var b = "";
-  b += leaf(170, 170, 145, 40); b += leaf(80, 240, 140, 95, "mid"); b += leaf(270, 80, 120, 5);
-  b += leaf(40, 300, 110, 115);
-  b += head(95, 80, 100, "blush");
-  b += head(240, 55, 62, "lav");
-  b += head(55, 225, 66, "lav");
-  b += leaf(190, 210, 95, 60, "mid");
-  b += head(170, 175, 50, "blush");
+  var b = bouquet(-40, -40, [
+    { hx: 245, hy: 60, r: 62, kind: "lav", bend: 35, collar: [[10, 140], [60, 110, "mid"]] },
+    { hx: 172, hy: 182, r: 52, kind: "blush", bend: -10, w: 2.6, collar: [[30, 115, "mid"], [80, 105]] },
+    { hx: 58, hy: 232, r: 66, kind: "lav", bend: -35, collar: [[90, 130], [130, 105, "mid"], [40, 100]] },
+    { hx: 95, hy: 82, r: 100, kind: "blush", bend: 0 },
+  ]);
   return svg(400, 360, b); },
   "brin": function () { seed = 1707;
-  var b = "";
-  b += stem(0, 160, 70, 120);
-  b += leaf(30, 150, 110, 30); b += leaf(20, 120, 100, -40, "mid"); b += leaf(60, 190, 90, 70);
-  b += head(70, 100, 62, "blush");
-  b += head(30, 200, 48, "lav");
+  var b = bouquet(-20, 150, [
+    { hx: 32, hy: 212, r: 48, kind: "lav", bend: 20, w: 2.6, collar: [[75, 95, "mid"], [20, 85]] },
+    { hx: 82, hy: 98, r: 62, kind: "blush", bend: -25, collar: [[-20, 105], [35, 115, "mid"], [80, 90]] },
+  ]);
   return svg(200, 270, b); },
   "fleur": function () { seed = 30;
-  var b = "";
-  b += stem(100, 120, 100, 190);
-  b += leaf(100, 165, 70, 200); b += leaf(100, 165, 70, -20);
-  b += head(100, 85, 58, "blush");
+  var b = bouquet(100, 196, [
+    { hx: 100, hy: 85, r: 58, kind: "blush", bend: 6, leaves: [[0.42, -1, 72, 62], [0.5, 1, 72, 62]] },
+  ]);
   return svg(200, 200, b); }
 };
 var cache = {};
