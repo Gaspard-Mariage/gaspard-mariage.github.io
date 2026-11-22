@@ -1,4 +1,4 @@
-/* Hortensias dessinés dans le navigateur (style du faire-part). Remplit chaque élément [data-fleur="coin-a|coin-b|brin|fleur"]. */
+/* Hortensias dessinés dans le navigateur (style du faire-part). Remplit chaque élément [data-fleur="coin-a|coin-b|coin-c|coin-d|brin|fleur"]. */
 (function () {
 var seed = 1;
 var rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
@@ -167,6 +167,22 @@ var BUILD = {
     { hx: 172, hy: 182, r: 52, kind: "blush", bend: -10, w: 2.6, collar: [[30, 115, "mid"], [80, 105]] },
     { hx: 58, hy: 232, r: 66, kind: "lav", bend: -35, collar: [[90, 130], [130, 105, "mid"], [40, 100]] },
     { hx: 95, hy: 82, r: 100, kind: "blush", bend: 0 },
+  ]);
+  return svg(400, 360, b); },
+  "coin-c": function () { seed = 1807;
+  var b = bouquet(-40, -40, [
+    { hx: 150, hy: 40, r: 60, kind: "lav", bend: 25, collar: [[-10, 135], [40, 115, "mid"]] },
+    { hx: 250, hy: 92, r: 58, kind: "blush", bend: -30, collar: [[5, 125, "mid"], [60, 110]] },
+    { hx: 66, hy: 205, r: 74, kind: "blush", bend: -25, collar: [[100, 140], [55, 120, "mid"], [145, 100]] },
+    { hx: 80, hy: 78, r: 92, kind: "blush", bend: 0 },
+  ]);
+  return svg(400, 340, b); },
+  "coin-d": function () { seed = 3003;
+  var b = bouquet(-40, -40, [
+    { hx: 285, hy: 38, r: 54, kind: "blush", bend: 30, collar: [[0, 130], [55, 105, "mid"]] },
+    { hx: 188, hy: 132, r: 60, kind: "lav", bend: -15, collar: [[35, 125, "mid"], [85, 110]] },
+    { hx: 40, hy: 245, r: 58, kind: "blush", bend: -40, collar: [[95, 125], [45, 100, "mid"]] },
+    { hx: 92, hy: 74, r: 98, kind: "lav", bend: 0 },
   ]);
   return svg(400, 360, b); },
   "brin": function () { seed = 1707;
