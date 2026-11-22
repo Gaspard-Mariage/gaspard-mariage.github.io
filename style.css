@@ -314,3 +314,63 @@ td.date { white-space: nowrap; color: var(--ink-soft); font-variant-numeric: tab
   .countdown { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 22rem; }
   .hero .side { display: none; }
 }
+
+/* ---------- Se loger ---------- */
+.stays { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 1.6rem; align-items: start; }
+.stay { background: var(--paper); border: 1px solid var(--blush-deep); padding: 1.8rem clamp(1.2rem, 4vw, 2rem); display: grid; gap: 0.5rem; min-width: 0; }
+.stay.featured { border-color: var(--gold); box-shadow: 0 18px 40px -30px rgba(110, 92, 87, 0.5); }
+.stay-kicker { margin: 0; font-size: 0.7rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold-dark); }
+.stay h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; line-height: 1.2; }
+.stay-sub { margin: 0; color: var(--ink-soft); font-style: italic; line-height: 1.45; }
+.stay-facts { margin: 0.6rem 0 0; display: grid; gap: 0.7rem; }
+.stay-facts div { display: grid; grid-template-columns: 6.2rem 1fr; gap: 0.8rem; align-items: baseline; }
+.stay-facts dt { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft); }
+.stay-facts dd { margin: 0; line-height: 1.45; overflow-wrap: anywhere; min-width: 0; }
+.stay-facts a { text-decoration: none; border-bottom: 1px solid var(--blush-deep); }
+.stay-facts a:hover { color: var(--gold); border-color: var(--gold); }
+.stay-dist { margin: 0.2rem 0 0; font-size: 0.95rem; color: var(--gold-dark); }
+.stay-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.8rem; }
+.stay-actions .btn { padding: 0.7rem 1.1rem; font-size: 0.74rem; }
+@media (max-width: 420px) { .stay-facts div { grid-template-columns: 1fr; gap: 0.1rem; } }
+
+.map-block { margin-top: 2.2rem; background: var(--paper); border: 1px solid var(--blush-deep); min-width: 0; }
+.map-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.6rem 1.4rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--blush-deep); }
+.map-head h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; font-size: 0.95rem; color: var(--ink-soft); }
+.legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend .pin { width: 0.8rem; height: 0.8rem; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+.map { height: clamp(360px, 60vw, 560px); width: 100%; background: #EFE7E3; z-index: 0; }
+.map-pin span { display: block; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.map-pin.leaflet-div-icon { background: none; border: 0; }
+.legend .p-fete, .map-pin.p-fete span { background: var(--gold); }
+.legend .p-mairie, .map-pin.p-mairie span { background: var(--leaf); }
+.legend .p-hotel, .map-pin.p-hotel span { background: #C98F80; }
+.legend .p-camping, .map-pin.p-camping span { background: #8981BD; }
+.leaflet-popup-content { font-family: var(--font-body); font-size: 1rem; color: var(--ink); line-height: 1.4; }
+.more-stays { padding: 1.2rem; border-top: 1px solid var(--blush-deep); display: grid; gap: 0.2rem; }
+.more-stays p { margin: 0; }
+.more-stays .stay-actions { margin-top: 0.5rem; margin-bottom: 0.4rem; }
+.hint-small { font-size: 0.95rem; color: var(--ink-soft); font-style: italic; }
+
+/* ---------- QR code (admin) ---------- */
+.qr-body { display: flex; flex-wrap: wrap; gap: 1.6rem 2.4rem; padding: 1.4rem 1.2rem; align-items: center; }
+.qr-card { margin: 0; padding: 1.2rem 1.4rem 1rem; border: 1px solid var(--blush-deep); background: #fff; text-align: center; display: grid; justify-items: center; gap: 0.4rem; }
+.qr-card img { width: 220px; height: 220px; max-width: 100%; image-rendering: pixelated; }
+.qr-names { margin: 0; font-size: 2rem; color: var(--ink); }
+.qr-card figcaption { font-size: 0.9rem; letter-spacing: 0.06em; color: var(--ink-soft); }
+.qr-info { flex: 1 1 18rem; min-width: 0; display: grid; gap: 0.6rem; }
+.qr-info p { margin: 0; overflow-wrap: anywhere; }
+.qr-info .tools .btn { padding: 0.55rem 1rem; font-size: 0.72rem; }
+.qr-status { min-height: 1.4em; color: var(--ok); font-size: 0.95rem; }
+@media print {
+  body.print-qr { background: #fff; }
+  body.print-qr * { visibility: hidden; }
+  body.print-qr #qr-card, body.print-qr #qr-card * { visibility: visible; }
+  body.print-qr #qr-card { position: fixed; left: 0; right: 0; top: 2cm; margin: 0 auto; width: 12cm; border: 0; }
+  body.print-qr #qr-card img { width: 9cm; height: 9cm; }
+  body.print-qr .qr-names { font-size: 30pt; }
+  body.print-qr #qr-card figcaption { font-size: 12pt; }
+}
+.map-tip { margin: 0; padding: 0.6rem 1.2rem; font-size: 0.92rem; font-style: italic; color: var(--ink-soft); border-bottom: 1px solid var(--blush-deep); }
+.leaflet-control-layers { font-family: var(--font-body); font-size: 0.95rem; color: var(--ink); }
+.zoom-here { color: var(--gold-dark); }

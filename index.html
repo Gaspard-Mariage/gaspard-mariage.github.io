@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,6 +22,7 @@
     <li><a href="#accueil">Accueil</a></li>
     <li><a href="#programme">Programme</a></li>
     <li><a href="#lieux">Lieux</a></li>
+    <li><a href="#loger">Se loger</a></li>
     <li><a href="#reponse">Réponse</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -106,7 +108,72 @@
   </div>
 </section>
 
-<section class="band blush gutter" id="reponse">
+<section class="band blush gutter" id="loger">
+  <div class="wrap">
+    <h2 class="section-title"><span class="script">Se loger</span><small>Week-end du 17 juillet 2027</small></h2>
+    <p class="intro">Laure et Gaspard ont retenu l'Hôtel des Sources, à Pougues-les-Eaux. Chacun réserve directement son hébergement auprès de l'établissement.</p>
+
+    <div class="stays">
+      <article class="stay featured">
+        <p class="stay-kicker">L'hôtel des mariés</p>
+        <h3>Hôtel des Sources</h3>
+        <p class="stay-sub">The Originals Boutique · 28 chambres</p>
+        <dl class="stay-facts">
+          <div><dt>Adresse</dt><dd>132 rue de la Mignarderie<br>58320 Pougues-les-Eaux</dd></div>
+          <div><dt>Téléphone</dt><dd><a href="tel:+33386367405">03 86 36 74 05</a></dd></div>
+          <div><dt>E-mail</dt><dd><a href="mailto:H5805@theoriginalshotels.com">H5805@theoriginalshotels.com</a></dd></div>
+          <div><dt>Sur place</dt><dd>Arrivée dès 14h, départ avant 12h · parking gratuit · petit-déjeuner buffet</dd></div>
+        </dl>
+        <p class="stay-dist" data-dist-from="hotel" hidden></p>
+        <div class="stay-actions">
+          <a class="btn solid" href="https://reservations.travelclick.com/105842?languageid=3" target="_blank" rel="noopener">Réserver en ligne</a>
+          <a class="btn" href="https://www.theoriginalshotels.com/hotels/des-sources-nevers-nord" target="_blank" rel="noopener">Site de l'hôtel</a>
+          <button class="btn" type="button" data-map-focus="hotel">Voir sur la carte</button>
+        </div>
+      </article>
+
+      <article class="stay">
+        <p class="stay-kicker">Plus nature</p>
+        <h3>Camping des Chanternes</h3>
+        <p class="stay-sub">Mobil-homes pour 4 à 6 personnes et tentes équipées pour 2 à 4 personnes</p>
+        <dl class="stay-facts">
+          <div><dt>Adresse</dt><dd>Avenue de Paris<br>58320 Pougues-les-Eaux</dd></div>
+          <div><dt>Téléphone</dt><dd><a href="tel:+33672527465">06 72 52 74 65</a> · <a href="tel:+33358078537">03 58 07 85 37</a></dd></div>
+          <div><dt>Ouverture</dt><dd>De mi-avril à fin septembre</dd></div>
+        </dl>
+        <p class="stay-dist" data-dist-from="camping" hidden></p>
+        <div class="stay-actions">
+          <a class="btn solid" href="https://www.booking.com/searchresults.fr.html?ss=Pougues-les-Eaux&amp;dest_id=-1459582&amp;dest_type=city&amp;checkin=2027-07-17&amp;checkout=2027-07-18&amp;group_adults=2&amp;no_rooms=1" target="_blank" rel="noopener">Voir sur Booking</a>
+          <button class="btn" type="button" data-map-focus="camping">Voir sur la carte</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="map-block">
+      <div class="map-head">
+        <h3>Sur la carte</h3>
+        <ul class="legend" aria-label="Légende">
+          <li><span class="pin p-fete"></span>Cérémonie laïque &amp; fête</li>
+          <li><span class="pin p-mairie"></span>Mairie</li>
+          <li><span class="pin p-hotel"></span>Hôtel des Sources</li>
+          <li><span class="pin p-camping"></span>Camping</li>
+        </ul>
+      </div>
+      <p class="map-tip">Cliquez sur la carte puis utilisez la molette, ou les boutons + et −, pour zoomer jusqu'aux maisons.</p>
+      <div id="map" class="map" role="region" aria-label="Carte de Pougues-les-Eaux avec les lieux du mariage et les hébergements"></div>
+      <div class="more-stays">
+        <p>Gîtes, chambres d'hôtes et appartements autour de Pougues, avec les dates du mariage déjà indiquées :</p>
+        <div class="stay-actions">
+          <a class="btn" href="https://www.booking.com/searchresults.fr.html?ss=Pougues-les-Eaux&amp;dest_id=-1459582&amp;dest_type=city&amp;checkin=2027-07-17&amp;checkout=2027-07-18&amp;group_adults=2&amp;no_rooms=1#map_opened" target="_blank" rel="noopener">Carte des logements Booking</a>
+          <a class="btn" href="https://www.airbnb.fr/s/Pougues~les~Eaux--France/homes?checkin=2027-07-17&amp;checkout=2027-07-18&amp;adults=2" target="_blank" rel="noopener">Carte des logements Airbnb</a>
+        </div>
+        <p class="hint-small">Nevers est à 10 minutes en voiture et offre beaucoup d'autres hôtels.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band gutter" id="reponse">
   <div class="wrap rsvp">
     <div class="medallion" aria-hidden="true">
       <svg viewBox="0 0 160 200">
@@ -131,7 +198,7 @@
   </div>
 </section>
 
-<section class="band gutter" id="contact">
+<section class="band blush gutter" id="contact">
   <div class="wrap">
     <h2 class="section-title"><span class="script">Nous joindre</span><small>Pour toute question</small></h2>
     <div class="contacts">
@@ -181,6 +248,8 @@
   if (tick()) { var t = setInterval(function () { if (!tick()) clearInterval(t); }, 1000); }
 })();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="carte.js"></script>
 <script src="fleurs.js"></script>
 </body>
 </html>

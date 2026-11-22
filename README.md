@@ -47,6 +47,14 @@ Pour une adresse du type `laure-et-gaspard.fr` (environ 8 €/an chez OVH, Gandi
 - **Exporter (Excel)** télécharge un fichier `.csv` qui s'ouvre directement dans Excel (pour le traiteur, le plan de table…).
 - Mot de passe oublié : le changer dans Supabase → Authentication → Users → `…` → *Send password recovery* ou recréer l'utilisateur.
 
+## Se loger et carte
+
+La section « Se loger » de l'accueil présente l'Hôtel des Sources et le camping des Chanternes, une carte (`carte.js`, fond OpenStreetMap) et des liens vers Booking et Airbnb déjà réglés sur Pougues-les-Eaux et les dates du mariage. Les coordonnées de l'hôtel et du camping sont dans `index.html` et `carte.js`.
+
+## QR code
+
+`qr-code.svg` et `qr-code.png` renvoient vers `https://gaspard-mariage.github.io/`. Ils ne changent jamais tant que le dépôt garde son nom. Dans `admin.html`, rubrique « QR code du site » : téléchargement, copie et impression.
+
 ## Modifier le contenu
 
 Tous les textes sont dans `index.html`. Les horaires du cocktail et du dîner sont marqués « Ensuite » et « Le soir » en attendant les horaires définitifs. Les hortensias sont dessinés par `fleurs.js` (aucune image à télécharger).

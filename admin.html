@@ -90,6 +90,29 @@
       <section class="panel" id="allergy-panel">
         <div class="panel-head"><h2>Allergies et intolérances</h2></div>
         <ul class="allergy-list" id="allergy-list"></ul>
+            </section>
+
+      <section class="panel" id="qr-panel">
+        <div class="panel-head"><h2>QR code du site</h2></div>
+        <div class="qr-body">
+          <figure class="qr-card" id="qr-card">
+            <p class="qr-names script">Laure &amp; Gaspard</p>
+            <img src="qr-code.svg" alt="QR code menant au site du mariage" width="220" height="220">
+            <figcaption>gaspard-mariage.github.io</figcaption>
+          </figure>
+          <div class="qr-info">
+            <p>Ce QR code ouvre la page d'accueil du site : <b>https://gaspard-mariage.github.io/</b></p>
+            <p class="hint">Il ne change jamais : vous pouvez l'imprimer sur les faire-part, les marque-places ou un panneau à l'entrée.</p>
+            <div class="tools">
+              <a class="btn solid" href="qr-code.png" download="QR-mariage-Laure-Gaspard.png">Télécharger (PNG)</a>
+              <a class="btn" href="qr-code.svg" download="QR-mariage-Laure-Gaspard.svg">Télécharger pour l'imprimeur (SVG)</a>
+              <button class="btn" type="button" id="qr-copy-img">Copier l'image</button>
+              <button class="btn" type="button" id="qr-copy-link">Copier le lien</button>
+              <button class="btn" type="button" id="qr-print">Imprimer</button>
+            </div>
+            <p class="qr-status" id="qr-status" role="status"></p>
+          </div>
+        </div>
       </section>
     </div>
   </div>
@@ -254,6 +277,23 @@
         allergyItems(r).map(function (x) { return x.who + " : " + x.what; }).join(" | ")];
     })));
   });
+  // QR code : copie, impression
+  function qrSay(t) { $("qr-status").textContent = t; setTimeout(function () { $("qr-status").textContent = ""; }, 3000); }
+  $("qr-copy-link").addEventListener("click", function () {
+    var url = "https://gaspard-mariage.github.io/";
+    (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { qrSay("Lien copié."); }, function () { qrSay("Copie impossible : sélectionnez le lien à la main."); });
+  });
+  $("qr-copy-img").addEventListener("click", function () {
+    if (!navigator.clipboard || !window.ClipboardItem) { qrSay("Ce navigateur ne permet pas de copier une image : utilisez « Télécharger »."); return; }
+    navigator.clipboard.write([new ClipboardItem({ "image/png": fetch("qr-code.png").then(function (r) { return r.blob(); }) })])
+      .then(function () { qrSay("Image copiée : collez-la dans un document ou un message."); }, function () { qrSay("Copie impossible ici : utilisez « Télécharger »."); });
+  });
+  $("qr-print").addEventListener("click", function () {
+    document.body.classList.add("print-qr");
+    window.print();
+  });
+  window.addEventListener("afterprint", function () { document.body.classList.remove("print-qr"); });
+
   $("export-people").addEventListener("click", function () {
     var lines = [["Prénom", "Nom", "Catégorie", "Présence", "Mairie", "Dîner", "Brunch", "Allergie / intolérance", "Réponse reçue le"]];
     data.forEach(function (r) {
