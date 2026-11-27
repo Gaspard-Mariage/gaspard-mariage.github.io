@@ -316,27 +316,34 @@ td.date { white-space: nowrap; color: var(--ink-soft); font-variant-numeric: tab
 }
 
 /* ---------- Se loger ---------- */
-.stays { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; align-items: stretch; max-width: 52rem; margin: 0 auto; }
-@media (max-width: 720px) { .stays { grid-template-columns: 1fr; max-width: 30rem; } }
-.stay { background: #FFFCFA; border: 1px solid var(--blush-deep); padding: 2rem clamp(1.2rem, 4vw, 2rem) 1.6rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.4rem; min-width: 0; }
-.stay.featured { border-color: var(--gold); box-shadow: 0 18px 40px -30px rgba(110, 92, 87, 0.5); }
-.stay-kicker { margin: 0; text-wrap: balance; font-size: 0.7rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold-dark); }
+/* Les deux fiches partagent les mêmes lignes (subgrid) : titres, rubriques et boutons alignés */
+.stays { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.6rem; row-gap: 0; max-width: 52rem; margin: 0 auto; }
+@media (max-width: 720px) { .stays { grid-template-columns: 1fr; max-width: 30rem; row-gap: 1.6rem; } }
+.stay {
+  display: grid; grid-row: span 11; grid-template-rows: subgrid; row-gap: 0.45rem;
+  justify-items: center; align-items: start; text-align: center; min-width: 0;
+  background: #FFFCFA; border: 1px solid var(--gold-light); padding: 2rem clamp(1.2rem, 4vw, 2rem) 1.6rem;
+}
+.stay-kicker { margin: 0; align-self: end; text-wrap: balance; font-size: 0.7rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold-dark); }
 .stay h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; line-height: 1.2; text-wrap: balance; }
 .stay-sub { margin: 0; color: var(--ink-soft); font-style: italic; line-height: 1.45; }
-.stay-facts { margin: 1rem 0 0; padding-top: 1rem; border-top: 1px solid var(--blush-deep); display: grid; gap: 0.75rem; width: 100%; }
-.stay-facts div { display: grid; gap: 0.1rem; }
+.stay-facts { display: contents; }
+.stay-facts div { display: grid; gap: 0.1rem; width: 100%; }
+.stay-facts div:first-child { margin-top: 0.6rem; padding-top: 1rem; border-top: 1px solid var(--blush-deep); }
 .stay-facts dt { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
 .stay-facts dd { margin: 0; line-height: 1.45; overflow-wrap: anywhere; min-width: 0; text-wrap: balance; }
 .stay-facts a { text-decoration: none; border-bottom: 1px solid var(--blush-deep); }
 .stay-facts a:hover { color: var(--gold); border-color: var(--gold); }
-.stay-dist { margin: 0.4rem 0 0; font-size: 0.95rem; color: var(--gold-dark); font-style: italic; }
-.stay-note { margin: auto 0 0; padding: 0.8rem 1rem; background: #FBF4EC; border: 1px solid var(--gold-light); font-size: 0.98rem; line-height: 1.45; text-wrap: balance; width: 100%; }
-.stay-note + .stay-actions { margin-top: 0; padding-top: 1rem; }
-.stay-actions { display: grid; grid-template-columns: 1fr; gap: 0.6rem; width: 100%; max-width: 17rem; margin-top: auto; padding-top: 1.2rem; }
+.stay-dist { margin: 0.2rem 0 0; min-height: 1.4em; font-size: 0.95rem; color: var(--gold-dark); font-style: italic; }
+.stay-dist[hidden] { display: block !important; visibility: hidden; }
+.stay-note { margin: 0.4rem 0 0; padding: 0.8rem 1rem; align-self: stretch; width: 100%; background: #FBF4EC; border: 1px solid var(--gold-light); font-size: 0.98rem; line-height: 1.45; text-wrap: balance; }
+.stay-note-empty { visibility: hidden; }
+.stay-actions { display: grid; grid-template-columns: 1fr; gap: 0.6rem; width: 100%; max-width: 17rem; padding-top: 0.8rem; align-self: end; }
 .stay-actions .btn { width: 100%; padding: 0.75rem 1rem; font-size: 0.74rem; }
-.stay-link { margin-top: 0.4rem; font-size: 0.95rem; color: var(--ink-soft); }
+.stay-link { margin-top: 0.2rem; font-size: 0.95rem; color: var(--ink-soft); }
 a.stay-link { text-decoration: none; border-bottom: 1px solid var(--blush-deep); }
 a.stay-link:hover { color: var(--gold); border-color: var(--gold); }
+@media (max-width: 720px) { .stay-note-empty { display: none; } }
 
 .map-block { max-width: 52rem; margin: 2.4rem auto 0; background: var(--paper); border: 1px solid var(--blush-deep); min-width: 0; }
 .map-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.6rem 1.4rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--blush-deep); }
